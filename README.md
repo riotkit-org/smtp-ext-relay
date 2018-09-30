@@ -1,7 +1,7 @@
 Postfix with external relays
 ============================
 
-Simple docker image extending [namshi/smtp](https://hub.docker.com/r/namshi/smtp/).
+Simple docker image extending [marvambass/versatile-postfix](https://hub.docker.com/r/marvambass/versatile-postfix/).
 Based on: https://serverfault.com/questions/660754/mail-sent-from-my-postfix-mail-server-goes-to-gmail-spam
 
 Adding external relay

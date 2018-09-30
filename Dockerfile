@@ -1,4 +1,4 @@
-FROM namshi/smtp:latest
+FROM marvambass/versatile-postfix
 
 ADD ./container-files/relay-setup-entrypoint.sh /bin/relay-setup-entrypoint.sh
 RUN chmod +x /bin/relay-setup-entrypoint.sh

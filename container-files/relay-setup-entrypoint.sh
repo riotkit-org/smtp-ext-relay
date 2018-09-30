@@ -81,4 +81,4 @@ main () {
 }
 
 main
-exec /bin/entrypoint.sh "$@"
+exec /opt/startup.sh "$@"
