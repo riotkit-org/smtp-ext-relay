@@ -10,12 +10,6 @@ get_relay_value () {
     eval "echo \${RELAY_${1}_${2}}"
 }
 
-enable_configuration () {
-    sudo chmod 400 /etc/postfix/sasl_passwd
-    sudo postmap /etc/postfix/sasl_passwd
-    sudo postmap /etc/postfix/transport
-}
-
 enforce_line_in_file () {
     file=$1
     line=$2
@@ -45,6 +39,9 @@ enforce_line_in_file () {
 }
 
 main () {
+    touch /etc/postfix/sasl_passwd
+    touch /etc/postfix/transport
+
     # iterate over all defined relays
     for current_relay in $(env |grep RELAY_|grep ADDRESS); do
         id=$(extract_relay_id ${current_relay})
@@ -77,7 +74,10 @@ main () {
         enforce_line_in_file "/etc/postfix/transport" "${relay_public_domain} smtp:[${relay_smtp_domain}]" "${relay_public_domain}"
     done
 
-    enable_configuration
+    sudo chown postfix:postfix /etc/postfix/ -R
+    sudo chmod 400 /etc/postfix/sasl_passwd
+    sudo postmap /etc/postfix/sasl_passwd
+    sudo postmap /etc/postfix/transport
 }
 
 main

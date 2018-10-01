@@ -4,6 +4,15 @@ Postfix with external relays
 Simple docker image extending [marvambass/versatile-postfix](https://hub.docker.com/r/marvambass/versatile-postfix/).
 Based on: https://serverfault.com/questions/660754/mail-sent-from-my-postfix-mail-server-goes-to-gmail-spam
 
+Getting started
+---------------
+
+1. Generate SSL keys
+
+```bash
+openssl req -new -x509 -extensions v3_ca -keyout ./data/etc/postfix/ssl/cakey.pem -out ./data/etc/postfix/ssl/cacert.pem -days 3650
+```
+
 Adding external relay
 ---------------------
 
@@ -25,6 +34,9 @@ service:
         image: wolnosciowiec/smtp-with-relays
         expose:
             - "25"
+        volumes:
+            - ./data/etc/postfix/ssl/cakey.pem:/etc/postfix/ssl/cakey.pem
+            - ./data/etc/postfix/ssl/cacert.pem:/etc/postfix/ssl/cacert.pem
         environment:
             - RELAY_GMAIL_ADDRESS=some.thing@gmail.com
             - RELAY_GMAIL_PASSWORD=yyy
