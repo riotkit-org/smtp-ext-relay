@@ -43,6 +43,11 @@ copy_custom_postfix_conf () {
         echo " >> Copying /tmp/custom-main.cf to /etc/postfix/main.cf"
         cat /tmp/custom-main.cf > /etc/postfix/main.cf
     fi
+
+    if [[ -f /tmp/custom-master.cf ]]; then
+        echo " >> Copying /tmp/custom-master.cf to /etc/postfix/master.cf"
+        cat /tmp/custom-master.cf > /etc/postfix/master.cf
+    fi
 }
 
 main () {
