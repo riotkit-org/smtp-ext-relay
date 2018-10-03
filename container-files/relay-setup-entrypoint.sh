@@ -38,6 +38,13 @@ enforce_line_in_file () {
     echo "${file} is up to date"
 }
 
+copy_custom_postfix_conf () {
+    if [[ -f /tmp/custom-main.cf ]]; then
+        echo " >> Copying /tmp/custom-main.cf to /etc/postfix/main.cf"
+        cat /tmp/custom-main.cf > /etc/postfix/main.cf
+    fi
+}
+
 main () {
     touch /etc/postfix/sasl_passwd
     touch /etc/postfix/transport
@@ -78,6 +85,8 @@ main () {
     sudo chmod 400 /etc/postfix/sasl_passwd
     sudo postmap /etc/postfix/sasl_passwd
     sudo postmap /etc/postfix/transport
+
+    copy_custom_postfix_conf
 }
 
 main

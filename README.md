@@ -50,3 +50,9 @@ service:
             - RELAY_OUTLOOK_SMTP_PORT=587
             - RELAY_OUTLOOK_EMAIL_DOMAIN=your-domain.org
 ```
+
+Custom main.cf
+--------------
+
+If after mounting main.cf as volume you get a lot of fatal errors such as `postconf: fatal: close /etc/postfix/main.cf.tmp: Device or resource busy`
+then you can put your `main.cf` at `/tmp/custom-main.cf` - it's contents will be securely copied to the /etc/postfix/main.cf
