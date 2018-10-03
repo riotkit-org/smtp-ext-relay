@@ -83,7 +83,7 @@ main () {
         fi
 
         enforce_line_in_file "/etc/postfix/sasl_passwd" "[${relay_smtp_domain}]:${relay_port} ${relay_mail}:${relay_passwd}" "${relay_mail}"
-        enforce_line_in_file "/etc/postfix/transport" "${relay_public_domain} smtp:[${relay_smtp_domain}]" "${relay_public_domain}"
+        enforce_line_in_file "/etc/postfix/transport" "${relay_public_domain} smtp:[${relay_smtp_domain}]:${relay_port}" "${relay_public_domain}"
     done
 
     sudo chown postfix:postfix /etc/postfix/ -R
