@@ -55,7 +55,7 @@ main () {
     touch /etc/postfix/transport
 
     # iterate over all defined relays
-    for current_relay in $(env |grep RELAY_|grep ADDRESS); do
+    for current_relay in $(env |grep RELAY_|grep EMAIL_DOMAIN); do
         id=$(extract_relay_id ${current_relay})
 
         # RELAY_xxx_ADDRESS=some.thing@gmail.com
@@ -72,10 +72,10 @@ main () {
         relay_passwd=$(get_relay_value ${id} "PASSWORD")
         relay_public_domain=$(get_relay_value ${id} "EMAIL_DOMAIN")
 
-        if [[ ! ${relay_smtp_domain} ]] || [[ ! ${relay_port} ]] || [[ ! ${relay_mail} ]] || [[ ! ${relay_passwd} ]] || [[ ! ${relay_public_domain} ]]; then
+        if [[ ! ${relay_smtp_domain} ]] || [[ ! ${relay_port} ]] || [[ ! ${relay_public_domain} ]]; then
             echo " Invalid configuration for ${id}, missing one of env variables, examples:"
-            echo " RELAY_${id}_ADDRESS=some.email@gmail.com"
-            echo " RELAY_${id}_PASSWORD=xxxyyy"
+            echo " RELAY_${id}_ADDRESS=some.email@gmail.com # (optional)"
+            echo " RELAY_${id}_PASSWORD=xxxyyy # (optional)"
             echo " RELAY_${id}_SMTP_DOMAIN=smtp.gmail.com"
             echo " RELAY_${id}_SMTP_PORT=587"
             echo " RELAY_${id}_EMAIL_DOMAIN=gmail.com"
