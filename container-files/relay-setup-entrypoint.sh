@@ -2,7 +2,7 @@
 
 extract_relay_id () {
     env_name=$(echo ${1} | cut -d"=" -f1)
-    without_ending=${env_name%%_ADDRESS}
+    without_ending=${env_name%%_EMAIL_DOMAIN}
     echo ${without_ending} | sed -e 's/RELAY_//'
 }
 
@@ -79,6 +79,9 @@ main () {
             echo " RELAY_${id}_SMTP_DOMAIN=smtp.gmail.com"
             echo " RELAY_${id}_SMTP_PORT=587"
             echo " RELAY_${id}_EMAIL_DOMAIN=gmail.com"
+            echo ""
+            echo " Environment variables:"
+            env
             exit 1
         fi
 
