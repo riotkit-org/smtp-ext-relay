@@ -1,6 +1,7 @@
 FROM marvambass/versatile-postfix
 
-RUN apt-get update && apt-get install -y spamc
+RUN apt-get update && apt-get install -y spamc \
+    && useradd -ms /bin/false spamcuser
 
 ADD ./container-files/relay-setup-entrypoint.sh /bin/relay-setup-entrypoint.sh
 ADD ./container-files/etc/postfix/* /etc/postfix/
