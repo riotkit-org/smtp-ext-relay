@@ -73,7 +73,7 @@ List of all environment variables that could be used.
 ```
 
 Custom main.cf and master.cf
-----------------------------
+-----------------------------
 
 If after mounting main.cf as volume you get a lot of fatal errors such as `postconf: fatal: close /etc/postfix/main.cf.tmp: Device or resource busy`
 then you can put your eg. `main.cf` at `/templates/etc/postfix/main.cf.j2` - it's contents will be securely copied to the /etc/postfix/main.cf

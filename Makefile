@@ -19,8 +19,8 @@ before_commit: generate_readme ## Git hook before commit
 develop: ## Setup development environment, install git hooks
 	echo " >> Setting up GIT hooks for development"
 	mkdir -p .git/hooks
-	echo "#!/bin/bash\nmake before_commit" > .git/hooks/pre-commit
-	chmod +X .git/hooks/pre-commit
+	echo "#\!/bin/bash\nmake before_commit" > .git/hooks/pre-commit
+	chmod +x .git/hooks/pre-commit
 
 generate_readme: ## Generate the README.md
 	[[ -f .helpers/extract-envs-from-dockerfile ]] || make _download_tools
