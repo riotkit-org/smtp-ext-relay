@@ -39,15 +39,11 @@ enforce_line_in_file () {
 }
 
 copy_custom_postfix_conf () {
-    if [[ -f /tmp/custom-main.cf ]]; then
-        echo " >> Copying /tmp/custom-main.cf to /etc/postfix/main.cf"
-        cat /tmp/custom-main.cf > /etc/postfix/main.cf
-    fi
+    echo " >> Rendering /templates/etc/postfix/main.cf.j2 into /etc/postfix/main.cf"
+    j2 /templates/etc/postfix/main.cf.j2 > /etc/postfix/main.cf
 
-    if [[ -f /tmp/custom-master.cf ]]; then
-        echo " >> Copying /tmp/custom-master.cf to /etc/postfix/master.cf"
-        cat /tmp/custom-master.cf > /etc/postfix/master.cf
-    fi
+    echo " >> Rendering /template/etc/postfix/master.cf.j2 into /etc/postfix/master.cf"
+    j2 /template/etc/postfix/master.cf.j2 > /etc/postfix/master.cf
 }
 
 main () {
