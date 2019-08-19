@@ -4,31 +4,16 @@ Postfix with optional external relays
 Simple docker image extending [marvambass/versatile-postfix](https://hub.docker.com/r/marvambass/versatile-postfix/).
 Based on: https://serverfault.com/questions/660754/mail-sent-from-my-postfix-mail-server-goes-to-gmail-spam
 
-Getting started
----------------
+Getting started to use the container
+------------------------------------
 
-1. Generate SSL keys
+1. Generate SSL keys if you do not have already any keys (you can use ex. Letsencrypt keys shared from WWW server)
 
 ```bash
 openssl req -new -x509 -extensions v3_ca -keyout ./data/etc/postfix/ssl/cakey.pem -out ./data/etc/postfix/ssl/cacert.pem -days 3650
 ```
 
-Adding external relay
----------------------
-
-To add a relay just define a list of environment variables.
-You can define as many relays as you want, but for each relay you need to fill all the information as on template below.
-
-```bash
-RELAY_xxx_ADDRESS=some.thing@gmail.com
-RELAY_xxx_PASSWORD=yyy
-RELAY_xxx_SMTP_DOMAIN=smtp.gmail.com
-RELAY_xxx_SMTP_PORT=587
-RELAY_xxx_EMAIL_DOMAIN=gmail.com
-```
-
-Example configuration
----------------------
+2. Run the docker container
 
 ```yaml
 version: '2.3'
@@ -129,6 +114,23 @@ List of all environment variables that could be used.
 
 ```
 
+Adding external relay
+---------------------
+
+To add a relay just define a list of environment variables.
+You can define as many relays as you want, but for each relay you need to fill all the information as on template below.
+
+This snippet below allows you to route ALL GMAIL recipient mails through your GMAIL account some.thing@gmail.com, the same
+can be done for other domains and SMTP servers.
+
+```bash
+RELAY_xxx_ADDRESS=some.thing@gmail.com
+RELAY_xxx_PASSWORD=yyy
+RELAY_xxx_SMTP_DOMAIN=smtp.gmail.com
+RELAY_xxx_SMTP_PORT=587
+RELAY_xxx_EMAIL_DOMAIN=gmail.com
+```
+
 Custom main.cf and master.cf
 -----------------------------
 
@@ -136,3 +138,16 @@ If after mounting main.cf as volume you get a lot of fatal errors such as `postc
 then you can put your eg. `main.cf` at `/templates/etc/postfix/main.cf.j2` - it's contents will be securely copied to the /etc/postfix/main.cf
 
 The same rule apply for the `master.cf`.
+
+Developing the container
+------------------------
+
+- The container is built on quay.io and hub.docker com
+- When you start working on it locally, at first run `make develop` to install git hooks
+- README.md is automatically generated from README.md.j2, do not edit the generated version!
+- Use `make` for building, pushing, etc.
+
+Releasing
+---------
+
+Just set a tag on git, the container will automatically be built on quay.io and on hub.docker.com
