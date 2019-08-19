@@ -1,5 +1,5 @@
-Postfix with external relays
-============================
+Postfix with optional external relays
+=====================================
 
 Simple docker image extending [marvambass/versatile-postfix](https://hub.docker.com/r/marvambass/versatile-postfix/).
 Based on: https://serverfault.com/questions/660754/mail-sent-from-my-postfix-mail-server-goes-to-gmail-spam
@@ -130,7 +130,7 @@ List of all environment variables that could be used.
 ```
 
 Custom main.cf and master.cf
-----------------------------
+-----------------------------
 
 If after mounting main.cf as volume you get a lot of fatal errors such as `postconf: fatal: close /etc/postfix/main.cf.tmp: Device or resource busy`
 then you can put your eg. `main.cf` at `/templates/etc/postfix/main.cf.j2` - it's contents will be securely copied to the /etc/postfix/main.cf
