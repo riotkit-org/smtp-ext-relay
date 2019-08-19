@@ -1,16 +1,16 @@
 .SILENT:
-RIOTKIT_UTILS_VER=v1.0.2
+RIOTKIT_UTILS_VER=v1.0.3
 SHELL=/bin/bash
-
-all: build push
 
 help:
 	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-build:
+all: build push
+
+build: ## Build the docker container
 	sudo docker build . -f ./Dockerfile -t wolnosciowiec/smtp-ext-relay
 
-push:
+push: ## Push into the docker registry
 	sudo docker push wolnosciowiec/smtp-ext-relay
 
 before_commit: generate_readme ## Git hook before commit
