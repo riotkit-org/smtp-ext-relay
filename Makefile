@@ -10,6 +10,9 @@ all: build push
 build: ## Build the docker container
 	sudo docker build . -f ./Dockerfile -t wolnosciowiec/smtp-ext-relay
 
+run_test_instance: ## Run a container to test
+	sudo docker run --rm --name smtp_test -e MYHOSTNAME=riotkit.org wolnosciowiec/smtp-ext-relay riotkit.org testlogin:somepasswd
+
 push: ## Push into the docker registry
 	sudo docker push wolnosciowiec/smtp-ext-relay
 

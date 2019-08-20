@@ -1,5 +1,16 @@
 #!/bin/bash
 
+#
+# Configure additional relays (if any specified), render JINJA2 templates.
+# Then at the end execute other script that configures the SMTP server users and other things.
+#
+#   Example:
+#     RELAY_xxx_ADDRESS=some.thing@gmail.com
+#     RELAY_xxx_PASSWORD=yyy
+#     RELAY_xxx_SMTP_DOMAIN=smtp.gmail.com
+#     RELAY_xxx_SMTP_PORT=587
+#     RELAY_xxx_EMAIL_DOMAIN=gmail.com
+
 extract_relay_id () {
     env_name=$(echo ${1} | cut -d"=" -f1)
     without_ending=${env_name%%_EMAIL_DOMAIN}
@@ -39,11 +50,13 @@ enforce_line_in_file () {
 }
 
 copy_custom_postfix_conf () {
-    echo " >> Rendering /templates/etc/postfix/main.cf.j2 into /etc/postfix/main.cf"
-    j2 /templates/etc/postfix/main.cf.j2 > /etc/postfix/main.cf
-
-    echo " >> Rendering /template/etc/postfix/master.cf.j2 into /etc/postfix/master.cf"
-    j2 /template/etc/postfix/master.cf.j2 > /etc/postfix/master.cf
+    # shellcheck disable=SC2044
+    for f in $(cd /templates && find . -type f); do
+        dest="${f/.j2/}"
+        echo " >> Rendering ${f}"
+        mkdir -p "$(dirname $f)"
+        j2 /templates/$f > $dest
+    done
 }
 
 main () {
@@ -94,4 +107,4 @@ main () {
 }
 
 main
-exec /opt/startup.sh "$@"
+exec /usr/local/bin/entrypoint-startup.sh "$@"

@@ -1,6 +1,17 @@
-FROM marvambass/versatile-postfix
+FROM alpine:3.10
+MAINTAINER RiotKit <riotkit_org@riseup.net>
+
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing mailutils \
+    && apk add --update bash sudo rsyslog postfix opendkim mailutils cyrus-sasl spamassassin-client \
+                        opendkim opendkim-utils py3-pip python3 supervisor \
+    && adduser -D -u 1090 spamcuser \
+    && addgroup sasl \
+    && pip3 install j2cli
+    #&& adduser postfix -G sasl
 
 ENV BIFF=no \
+    # Banner
+    SMTPD_BANNER="RiotKit SMTPD" \
     # With locally submitted mail, append the string ".$mydomain" to addresses that have no ".domain" information. With remotely submitted mail, append the string ".$remote_header_rewrite_domain" instead.
     APPEND_DOT_MYDOMAIN=no \
     # Certificate
@@ -38,14 +49,19 @@ ENV BIFF=no \
     # Use TLS in Postfix Client
     SMTP_USE_TLS=yes \
     # Outgoing mailer certificate
-    SMTP_TLS_CA_FILE=/etc/postfix/ssl/cacert.pem
+    SMTP_TLS_CA_FILE=/etc/postfix/ssl/cacert.pem \
+    # DKIM
+    ENABLE_DKIM=true \
+    # Canonicalization is a process by which the headers and body of an email are converted to a canonical standard form before being signed (values: relaxed/simple)
+    DKIM_CANONICALIZATION=simple \
+    # To support multiple concurrent public keys per sending domain, the DNS namespace is further subdivided with "selectors". Selectors are arbitrary names below the "_domainkey." namespace. For example, selectors may indicate the names of your server locations (e.g., "mta1", "mta2", and "mta2"), the signing date (e.g., "january2005", "february2005", etc.), or even the individual user.
+    DKIM_SELECTOR=mail \
+    # /etc/aliases entries
+    ALIASES=
 
-RUN apt-get update && apt-get install -y spamc python-pip \
-    && useradd -ms /bin/false spamcuser \
-    && pip install j2cli
-
-ADD ./container-files/relay-setup-entrypoint.sh /bin/relay-setup-entrypoint.sh
+ADD ./container-files/relay-setup-entrypoint.sh /usr/local/bin/relay-setup-entrypoint.sh
+ADD ./container-files/usr/local/bin/entrypoint-startup.sh /usr/local/bin/entrypoint-startup.sh
 ADD ./container-files/templates /templates
-RUN chmod +x /bin/relay-setup-entrypoint.sh
+RUN chmod +x /usr/local/bin/relay-setup-entrypoint.sh /usr/local/bin/entrypoint-startup.sh
 
-ENTRYPOINT ["/bin/relay-setup-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/relay-setup-entrypoint.sh"]

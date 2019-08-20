@@ -27,6 +27,7 @@ service:
             - ./data/etc/postfix/ssl/cacert.pem:/etc/postfix/ssl/cacert.pem
         environment:
             BIFF: no
+            SMTPD_BANNER: "RiotKit SMTPD"
             APPEND_DOT_MYDOMAIN: no
             SMTPD_TLS_CERT_FILE: /etc/ssl/certs/ssl-cert-snakeoil.pem
             SMTPD_TLS_KEY_FILE: /etc/ssl/private/ssl-cert-snakeoil.key
@@ -46,6 +47,10 @@ service:
             DELAY_WARNING_TIME: 4h
             SMTP_USE_TLS: yes
             SMTP_TLS_CA_FILE: /etc/postfix/ssl/cacert.pem
+            ENABLE_DKIM: true
+            DKIM_CANONICALIZATION: simple
+            DKIM_SELECTOR: mail
+            ALIASES: 
             
 
             # The relays are optional, they do not have to be defined
@@ -73,6 +78,8 @@ List of all environment variables that could be used.
 ```yaml
 
 - BIFF # (example value: no)
+# Banner
+- SMTPD_BANNER # (example value: "RiotKit SMTPD")
 # With locally submitted mail, append the string ".$mydomain" to addresses that have no ".domain" information. With remotely submitted mail, append the string ".$remote_header_rewrite_domain" instead.
 - APPEND_DOT_MYDOMAIN # (example value: no)
 # Certificate
@@ -111,6 +118,14 @@ List of all environment variables that could be used.
 - SMTP_USE_TLS # (example value: yes)
 # Outgoing mailer certificate
 - SMTP_TLS_CA_FILE # (example value: /etc/postfix/ssl/cacert.pem)
+# DKIM
+- ENABLE_DKIM # (example value: true)
+# Canonicalization is a process by which the headers and body of an email are converted to a canonical standard form before being signed (values: relaxed/simple)
+- DKIM_CANONICALIZATION # (example value: simple)
+# To support multiple concurrent public keys per sending domain, the DNS namespace is further subdivided with "selectors". Selectors are arbitrary names below the "_domainkey." namespace. For example, selectors may indicate the names of your server locations (e.g., "mta1", "mta2", and "mta2"), the signing date (e.g., "january2005", "february2005", etc.), or even the individual user.
+- DKIM_SELECTOR # (example value: mail)
+# /etc/aliases entries
+- ALIASES # (example value: )
 
 ```
 
