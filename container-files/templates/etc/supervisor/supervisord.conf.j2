@@ -24,7 +24,7 @@ command=rsyslogd -n
 stdout_events_enabled=true
 stderr_events_enabled=true
 
-{% if ENABLE_DKIM == 'true' %}
+{% if ENABLE_DKIM.lower() == 'yes' or ENABLE_DKIM.lower() == 'true' %}
 [program:opendkim]
 command=opendkim -x /etc/opendkim.conf -A -f
 stdout_events_enabled=true

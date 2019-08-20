@@ -148,7 +148,7 @@ List of all environment variables that could be used.
 # To support multiple concurrent public keys per sending domain, the DNS namespace is further subdivided with "selectors". Selectors are arbitrary names below the "_domainkey." namespace. For example, selectors may indicate the names of your server locations (e.g., "mta1", "mta2", and "mta2"), the signing date (e.g., "january2005", "february2005", etc.), or even the individual user.
 - DKIM_SELECTOR # (example value: mail)
 
-# /etc/aliases entries
+# /etc/aliases entries @todo: Better examples there
 - ALIASES # (example value: )
 
 
