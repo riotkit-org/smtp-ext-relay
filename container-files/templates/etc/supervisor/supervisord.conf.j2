@@ -15,7 +15,7 @@ startsecs	= 0
 autorestart	= false
 
 [program:saslauthd]
-command=/usr/sbin/saslauthd -a shadow -c -m /var/spool/postfix/var/run/saslauthd -n 5 -d
+command=/usr/sbin/saslauthd -a shadow -c -m /var/run/saslauthd -n 5 -d
 stdout_events_enabled=true
 stderr_events_enabled=true
 

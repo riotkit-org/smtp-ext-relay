@@ -138,7 +138,7 @@ then
 fi
 
 # preparing directories
-mkdir -p /var/spool/postfix/var/run/saslauthd /run/opendkim
+mkdir -p /var/run/saslauthd /run/opendkim
 chown root:root /etc/postfix -R
 
 # disable choot, not required in docker container
