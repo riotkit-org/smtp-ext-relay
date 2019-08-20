@@ -2,7 +2,9 @@ FROM alpine:3.10
 MAINTAINER RiotKit <riotkit_org@riseup.net>
 
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing mailutils \
-    && apk add --update bash sudo rsyslog postfix opendkim mailutils cyrus-sasl spamassassin-client \
+    && apk add --update bash sudo rsyslog postfix opendkim mailutils cyrus-sasl \
+                        cyrus-sasl-plain cyrus-sasl-crammd5 cyrus-sasl-login cyrus-sasl-digestmd5 cyrus-sasl-gs2 cyrus-sasl-scram \
+                        cyrus-sasl-ntlm cyrus-sasl-gssapiv2 spamassassin-client \
                         opendkim opendkim-utils py3-pip python3 supervisor \
     && adduser -D -u 1090 spamcuser \
     && addgroup sasl \
