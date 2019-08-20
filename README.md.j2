@@ -54,6 +54,7 @@ List of all environment variables that could be used.
 ```yaml
 {% for env_var, attrs in DOCKERFILE_ENVS.items() %}{% if attrs[2] %}# {{ attrs[2] }}{% endif %}
 - {{ attrs[0] }} # (example value: {{ attrs[1] }})
+
 {% endfor %}
 ```
 
