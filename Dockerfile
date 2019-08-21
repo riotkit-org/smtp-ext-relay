@@ -61,9 +61,13 @@ ENV BIFF=no \
     # /etc/aliases entries @todo: Better examples there
     ALIASES=
 
-ADD ./container-files/relay-setup-entrypoint.sh /usr/local/bin/relay-setup-entrypoint.sh
+ADD ./container-files/usr/local/bin/relay-setup-entrypoint.sh /usr/local/bin/relay-setup-entrypoint.sh
 ADD ./container-files/usr/local/bin/entrypoint-startup.sh /usr/local/bin/entrypoint-startup.sh
+ADD ./container-files/usr/local/bin/healthcheck.sh /usr/local/bin/healthcheck.sh
 ADD ./container-files/templates /templates
 RUN chmod +x /usr/local/bin/relay-setup-entrypoint.sh /usr/local/bin/entrypoint-startup.sh
+
+HEALTHCHECK --interval=2m --timeout=3s \
+  CMD /usr/local/bin/healthcheck.sh
 
 ENTRYPOINT ["/usr/local/bin/relay-setup-entrypoint.sh"]

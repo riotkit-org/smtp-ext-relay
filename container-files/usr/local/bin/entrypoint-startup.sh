@@ -57,7 +57,12 @@ then
     then
       USER=`echo "$ARG" | cut -d":" -f1`
       echo "    >> Adding user: $USER"
-      adduser -s /bin/bash $USER -D
+
+      # shellcheck disable=SC2210
+      if ! id -u $USER 2&>1 > /dev/null; then
+          adduser -s /bin/bash $USER -D
+      fi
+
       echo "$ARG" | chpasswd
       if [ ! -d /var/spool/mail/$USER ]
       then
