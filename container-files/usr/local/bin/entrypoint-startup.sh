@@ -59,9 +59,7 @@ then
       echo "    >> Adding user: $USER"
 
       # shellcheck disable=SC2210
-      if ! id -u $USER 2&>1 > /dev/null; then
-          adduser -s /bin/bash $USER -D
-      fi
+      adduser -s /bin/bash $USER -D || true
 
       echo "$ARG" | chpasswd
       if [ ! -d /var/spool/mail/$USER ]
