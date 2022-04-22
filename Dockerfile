@@ -1,15 +1,27 @@
-FROM alpine:3.10
+FROM alpine:3.12
 MAINTAINER RiotKit <riotkit_org@riseup.net>
 
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing mailutils \
-    && apk add --update bash sudo rsyslog postfix opendkim mailutils cyrus-sasl \
+RUN apk add --update bash sudo postfix opendkim cyrus-sasl rsyslog \
                         cyrus-sasl-plain cyrus-sasl-crammd5 cyrus-sasl-login cyrus-sasl-digestmd5 cyrus-sasl-gs2 cyrus-sasl-scram \
                         cyrus-sasl-ntlm cyrus-sasl-gssapiv2 spamassassin-client \
-                        opendkim opendkim-utils py3-pip python3 supervisor \
+                        opendkim opendkim-utils \
     && adduser -D -u 1090 spamcuser \
-    && addgroup sasl \
-    && pip3 install j2cli
-    #&& adduser postfix -G sasl
+    && addgroup sasl
+
+# p2 (jinja2)
+RUN wget https://github.com/wrouesnel/p2cli/releases/download/r13/p2-linux-x86_64 -O /usr/bin/p2 && chmod +x /usr/bin/p2
+
+# multirun (supervisord equivalent)
+RUN wget https://github.com/nicolas-van/multirun/releases/download/1.1.3/multirun-x86_64-linux-musl-1.1.3.tar.gz -O /tmp/multirun.tar.gz \
+    && cd /tmp \
+    && tar xvf multirun.tar.gz \
+    && rm multirun.tar.gz \
+    && mv multir* /usr/bin/multirun \
+    && chmod +x /usr/bin/multirun
+
+
+# todo: do not use sudo
+# todo: non-root container
 
 ENV BIFF=no \
     # Banner
@@ -69,5 +81,7 @@ RUN chmod +x /usr/local/bin/relay-setup-entrypoint.sh /usr/local/bin/entrypoint-
 
 HEALTHCHECK --interval=2m --timeout=3s \
   CMD /usr/local/bin/healthcheck.sh
+
+EXPOSE "2225"
 
 ENTRYPOINT ["/usr/local/bin/relay-setup-entrypoint.sh"]

@@ -55,7 +55,7 @@ copy_custom_postfix_conf () {
         dest="${f/.j2/}"
         echo " >> Rendering ${f}"
         mkdir -p "$(dirname $f)"
-        j2 /templates/$f > $dest
+        p2 --template /templates/$f > $dest
     done
 }
 

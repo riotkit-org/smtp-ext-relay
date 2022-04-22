@@ -120,10 +120,12 @@ then
     echo "$i" >> /etc/aliases
     echo ">> Adding $i to /etc/aliases"
   done
-fi
+
 echo ">> The new /etc/aliases file:"
 cat /etc/aliases
 newaliases
+
+fi
 
 ##
 # POSTFIX RAW Config ENVs
@@ -148,11 +150,15 @@ chown root:root /etc/postfix -R
 postconf -F smtp/inet/chroot=n
 
 # starting services
-echo " >> Starting supervisor"
-supervisord -c /etc/supervisor/supervisord.conf
+echo " >> Starting processes"
+PROCESSES=("saslauthd -a shadow -c -m /var/run/saslauthd -n 5 -d" "postfix start-fg" "tail -F /var/log/mail.*" "rsyslogd -n")
 
-# print logs
-echo " >> Printing the logs"
+if [[ "${ENABLE_DKIM}" == "true" ]] || [[ "${ENABLE_DKIM}" == "yes" ]]; then
+    PROCESSES+=("opendkim -x /etc/opendkim.conf -A -f")
+fi
+
 touch /var/log/mail.log /var/log/mail.err /var/log/mail.warn
 chmod a+rw /var/log/mail.*
-tail -F /var/log/mail.*
+
+set -x
+exec multirun "${PROCESSES[@]/#/}"
