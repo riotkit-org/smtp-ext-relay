@@ -1,0 +1,49 @@
+{{- if and .Values.persistence.dkim.create (eq .Values.persistence.dkim.kind "PersistentVolumeClaim") }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: {{ .Values.persistence.dkim.name }}
+    labels:
+        {{- include "smtp-ext-relay.labels" . | nindent 8 }}
+spec:
+    resources:
+        requests:
+            storage: 5Mi
+    accessModes:
+        - ReadWriteOnce
+    volumeMode: Filesystem
+    {{- with .Values.persistence.dkim.spec }}
+    {{ . | toYaml | nindent 4}}
+    {{- end }}
+
+{{- end }}
+
+{{- if and .Values.persistence.dkim.create (eq .Values.persistence.dkim.kind "Secret") }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: {{ .Values.persistence.dkim.name }}
+    labels:
+        {{- include "smtp-ext-relay.labels" . | nindent 8 }}
+data:
+    dkim.key: "{{ .Values.persistence.dkim.publicKey | b64enc }}"
+    dkim.public: "{{ .Values.persistence.dkim.privateKey | b64enc }}"
+{{- end }}
+
+{{- if and .Values.persistence.dkim.create (eq .Values.persistence.dkim.kind "SealedSecret") }}
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+    name: {{ .Values.persistence.dkim.name }}
+    labels:
+        {{- include "smtp-ext-relay.labels" . | nindent 8 }}
+spec:
+    encryptedData:
+        dkim.key: "{{ .Values.persistence.dkim.publicKey }}"
+        dkim.public: "{{ .Values.persistence.dkim.privateKey }}"
+    template:
+        type: Opaque
+{{- end }}

@@ -1,0 +1,88 @@
+replicas: 1
+podAnnotations: {}
+podSecurityContext: {}
+nodeSelector: {}
+affinity: {}
+tolerations: {}
+
+service:
+    type: ClusterIP
+
+image:
+    repository: ghcr.io/riotkit-org/smtp-ext-relay
+    # tag:
+
+useTLS: true
+hostName: example.org
+
+tlsSecrets:
+    create: true
+    name: smtp-tls
+    kind: Secret  # Secret or SealedSecret
+    cert: |
+        ...
+    key: |
+        ...
+    ca: |
+        ...
+
+persistence:
+    mail:
+        enabled: false
+        create: false
+        name: smtp-mails-pvc
+    dkim:
+        # DKIM can be mounted in following variants:
+        # 1) New Secret managed by Helm - you provide values (kind=Secret, create=true, privateKey, publicKey)
+        # 2) New SealedSecret managed by Helm - you provide encrypted values (kind=SealedSecret, create=true, privateKey, publicKey)
+        # 3) New PersistentVolumeClaim (kind=PersistentVolumeClaim, create=true)
+        # 4) Existing external Secret in the cluster (kind=Secret, create=false, name)
+        # 5) Existing PersistentVolumeClaim (kind=PersistentVolumeClaim, create=false)
+
+        # The secret should contain two entries:
+        # - dkim.key
+        # - dkim.public
+
+        kind: PersistentVolumeClaim   # PersistentVolumeClaim, Secret, SealedSecret
+        create: true
+        name: smtp-dkim-pvc
+
+        # only valid for Secret and SealedSecret type (for SealedSecret the values must be already encrypted!)
+        privateKey: |
+            ...
+        publicKey: |
+            ...
+
+        # spec:
+        #     storageClassName: "gp2"
+        #     volumeName: smtp-mails-pv
+
+
+envs:
+    BIFF: "no"
+    SMTPD_BANNER: "RiotKit SMTPD"
+    APPEND_DOT_MYDOMAIN: "no"
+    RELAY_HOST: ""
+    MAILBOX_SIZE_LIMIT: "0"
+    RECIPIENT_DELIMITER: "+"
+    SASL_AUTH_ENABLE: "yes"
+    TLS_SECURITY_LEVEL: "may"
+    HEADER_SIZE_LIMIT: "4096000"
+    SMTPD_RECIPIENT_RESTRICTIONS: "permit_mynetworks permit_sasl_authenticated reject_unauth_destination"
+    SMTPD_HELO_RESTRICTIONS: "permit_sasl_authenticated, permit_mynetworks, reject_invalid_hostname, reject_unauth_pipelining, reject_non_fqdn_hostname"
+    SMTP_SASL_AUTH_ENABLE: "yes"
+    SMTP_SASL_SECURITY_OPTIONS: "noanonymous"
+    DELAY_WARNING_TIME: "4h"
+    SMTP_USE_TLS: "yes"
+    ENABLE_DKIM: "true"
+    DKIM_CANONICALIZATION: "simple"
+    DKIM_SELECTOR: "mail"
+
+#    The syntax is that you can define as much relays as you want.
+#    The "GMAIL" is a relay name, it can be actually any name e.g. "BAKUNIN", "CAT" or "DOG" :-)
+#
+#    RELAY_GMAIL_ADDRESS: some.thing@gmail.com
+#    RELAY_GMAIL_PASSWORD: yyy
+#    RELAY_GMAIL_SMTP_DOMAIN: smtp.gmail.com
+#    RELAY_GMAIL_SMTP_PORT: 587
+#    RELAY_GMAIL_EMAIL_DOMAIN: gmail.com

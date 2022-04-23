@@ -56,18 +56,18 @@ service:
             # The relays are optional, they do not have to be defined
             # all mails could be sent just without any relay
             # redirect all recipient=*@gmail.com mails through gmail account
-            - RELAY_GMAIL_ADDRESS=some.thing@gmail.com
-            - RELAY_GMAIL_PASSWORD=yyy
-            - RELAY_GMAIL_SMTP_DOMAIN=smtp.gmail.com
-            - RELAY_GMAIL_SMTP_PORT=587
-            - RELAY_GMAIL_EMAIL_DOMAIN=gmail.com
+            RELAY_GMAIL_ADDRESS: some.thing@gmail.com
+            RELAY_GMAIL_PASSWORD: yyy
+            RELAY_GMAIL_SMTP_DOMAIN: smtp.gmail.com
+            RELAY_GMAIL_SMTP_PORT: 587
+            RELAY_GMAIL_EMAIL_DOMAIN: gmail.com
 
             # the same for outlook
-            - RELAY_OUTLOOK_ADDRESS=some.thing@your-domain.org
-            - RELAY_OUTLOOK_PASSWORD=yyy
-            - RELAY_OUTLOOK_SMTP_DOMAIN=smtp.office365.com
-            - RELAY_OUTLOOK_SMTP_PORT=587
-            - RELAY_OUTLOOK_EMAIL_DOMAIN=your-domain.org
+            RELAY_OUTLOOK_ADDRESS: some.thing@your-domain.org
+            RELAY_OUTLOOK_PASSWORD: yyy
+            RELAY_OUTLOOK_SMTP_DOMAIN: smtp.office365.com
+            RELAY_OUTLOOK_SMTP_PORT: 587
+            RELAY_OUTLOOK_EMAIL_DOMAIN: your-domain.org
 ```
 
 Configuration reference

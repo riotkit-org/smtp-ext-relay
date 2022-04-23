@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ include "smtp-ext-relay.fullname" . }}
+    labels:
+        {{- include "smtp-ext-relay.labels" . | nindent 8 }}
+spec:
+    type: {{ .Values.service.type }}
+    ports:
+        - port: 2225
+          targetPort: smtp
+          protocol: TCP
+          name: smtp_high
+
+        - port: 25
+          targetPort: smtp
+          protocol: TCP
+          name: smtp
+    selector:
+        {{- include "smtp-ext-relay.selectorLabels" . | nindent 8 }}

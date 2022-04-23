@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ include "smtp-ext-relay.fullname" . }}
+    labels:
+        {{- include "smtp-ext-relay.labels" . | nindent 8 }}
+spec:
+    replicas: {{ .Values.replicas }}
+    selector:
+        matchLabels:
+            {{- include "smtp-ext-relay.selectorLabels" . | nindent 10 }}
+    template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+            annotations:
+              {{- toYaml . | nindent 16 }}
+          {{- end }}
+            labels:
+              {{- include "smtp-ext-relay.selectorLabels" . | nindent 16 }}
+              {{- if eq (.Values.image.tag | default .Chart.AppVersion) "latest" | or (eq (.Values.image.tag | default .Chart.AppVersion) "snapshot") }}
+                refreshImageTag: "{{- randAlphaNum 24 | nospace -}}"
+              {{- end }}
+        spec:
+            {{- with .Values.podSecurityContext }}
+            securityContext:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.nodeSelector }}
+            nodeSelector:
+                {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.affinity }}
+            affinity:
+                {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.tolerations }}
+            tolerations:
+                {{- toYaml . | nindent 14 }}
+            {{- end }}
+            containers:
+                - name: smtp
+                  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+                  ports:
+                      - containerPort: 2225
+                        name: smtp
+
+                  env:
+                      {{- if .Values.useTLS }}
+                      - name: SMTP_TLS_CA_FILE
+                        value: /mnt/certs/ca
+                      - name: SMTPD_TLS_CERT_FILE
+                        value: /mnt/certs/cert
+                      - name: SMTPD_TLS_KEY_FILE
+                        value: /mnt/certs/key
+                      - name: SMTPD_USE_TLS
+                        value: yes
+                      {{- end }}
+                      - name: MYHOSTNAME
+                        value: {{ .Values.hostName }}
+                      {{- with .Values.env }}
+                      {{- range $key, $value := . }}
+                      - name: {{ $key }}
+                        value: "{{ $value }}"
+                      {{- end }}
+                      {{- end }}
+
+                  volumeMounts:
+                      {{- if .Values.useTLS }}
+                      - name: tls
+                        mountPath: "/mnt/certs"
+                        readOnly: true
+                      {{- end }}
+                      {{- if .Values.persistence.mail.enabled }}
+                      - name: mail-persistence
+                        mountPath: "/etc/var/mail"
+                        readOnly: false
+                      {{- end }}
+                      {{- if .Value.persistence.dkim }}
+                      - name: dkim
+                        mountPath: /etc/postfix/dkim
+                      {{- end }}
+
+            volumes:
+                {{- if .Values.useTLS }}
+                - name: tls
+                  secret:
+                      secretName: {{ .Values.tlsSecrets.name }}
+                {{- end }}
+                {{- if .Value.persistence.dkim }}
+                - name: dkim
+                  {{- if eq .Value.persistence.dkim.kind "PersistentVolumeClaim" }}
+                  persistentVolumeClaim:
+                      claimName: {{ .Values.persistence.dkim.name }}
+                  {{- else }}
+                  secret:
+                      secretName: {{ .Values.persistence.dkim.name }}
+                  {{- end }}
+                {{- end }}
