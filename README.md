@@ -4,6 +4,11 @@ Postfix with optional external relays
 Simple docker image extending [marvambass/versatile-postfix](https://hub.docker.com/r/marvambass/versatile-postfix/).
 Based on: https://serverfault.com/questions/660754/mail-sent-from-my-postfix-mail-server-goes-to-gmail-spam
 
+Kubernetes native support
+-------------------------
+
+Use [Helm Chart](./helm/smtp-ext-relay) do deploy SMTP server to a Kubernetes/OpenShift cluster. Our Helm Chart will automate configuration, data persistence and secrets.
+
 Getting started to use the container
 ------------------------------------
 

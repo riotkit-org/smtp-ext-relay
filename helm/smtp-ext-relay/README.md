@@ -5,9 +5,10 @@ Simple SMTP server working on Kubernetes.
 
 **Features:**
 - Optionally route mails via external relays e.g. @gmail.com route via gmail.com account
-- OpenDKIN
+- OpenDKIM
 - TLS authentication
 - Spam Assassin
+- Supports [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets)
 
 Version v2.x was refactored to not depend on Python and Supervisord - instead lightweight Golang-based alternatives were used.
 
