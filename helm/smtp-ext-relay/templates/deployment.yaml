@@ -41,10 +41,11 @@ spec:
             containers:
                 - name: smtp
                   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+                  args:
+                      - "{{ .Values.hostName }}"
                   ports:
                       - containerPort: 2225
                         name: smtp
-
                   env:
                       {{- if .Values.useTLS }}
                       - name: SMTP_TLS_CA_FILE
@@ -80,6 +81,8 @@ spec:
                       - name: dkim
                         mountPath: /etc/postfix/dkim
                       {{- end }}
+                      - name: users
+                        mountPath: /mnt/users
 
             volumes:
                 {{- if .Values.useTLS }}
@@ -97,3 +100,6 @@ spec:
                       secretName: {{ .Values.persistence.dkim.name }}
                   {{- end }}
                 {{- end }}
+                - name: users
+                  secret:
+                      secretName: {{ include "smtp-ext-relay.fullname" . }}-users-secret

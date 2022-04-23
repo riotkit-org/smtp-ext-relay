@@ -15,6 +15,11 @@ image:
 useTLS: true
 hostName: example.org
 
+usersSecret:
+    kind: Secret # Secret or SealedSecret
+    users: {}
+        # user: password syntax, if SealedSecret then password must be already encrypted
+
 tlsSecrets:
     create: true
     name: smtp-tls

@@ -31,6 +31,41 @@ by MarvAmBass
 EOF
 }
 
+createUser() {
+    if id "$USER" &>/dev/null; then
+        echo " >> User '${USER}' already exists"
+        return 0
+    fi
+
+    echo " >> Adding user: $USER"
+    # shellcheck disable=SC2210
+    adduser -s /bin/bash $USER -D || true
+
+    echo "$ARG" | chpasswd
+    if [ ! -d /var/spool/mail/$USER ]
+    then
+        mkdir -p /var/spool/mail/$USER
+    fi
+    chown -R $USER:mail /var/spool/mail/$USER
+    chmod -R a=rwx /var/spool/mail/$USER
+    chmod -R o=- /var/spool/mail/$USER
+}
+
+createUsers() {
+    # all arguments but skip first
+    i=0
+    for ARG in "$@"
+    do
+        if [ $i -gt 0 ] && [ "$ARG" != "${ARG/://}" ]
+        then
+            USER=`echo "$ARG" | cut -d":" -f1`
+            createUser $USER $ARG
+        fi
+
+        i=`expr $i + 1`
+    done
+}
+
 if [ "-h" == "$1" ] || [ "--help" == "$1" ] || [ -z $1 ] || [ "" == "$1" ]
 then
     print_help
@@ -47,32 +82,22 @@ echo "Domain $1" >> /etc/opendkim.conf
 
 if [ ${#@} -gt 1 ]
 then
-  echo " >> Adding users..."
+    echo " >> Adding users from commandline..."
+    createUsers "${@}"
+fi
 
-  # all arguments but skip first argumenti
-  i=0
-  for ARG in "$@"
-  do
-    if [ $i -gt 0 ] && [ "$ARG" != "${ARG/://}" ]
-    then
-      USER=`echo "$ARG" | cut -d":" -f1`
-      echo "    >> Adding user: $USER"
+USERS_AS_FILES_PATH=/mnt/users
+mkdir -p /mnt/users
+echo "test123" > /mnt/users/admin
 
-      # shellcheck disable=SC2210
-      adduser -s /bin/bash $USER -D || true
+if [[ "${USERS_AS_FILES_PATH}" != "" ]] && [[ -d "${USERS_AS_FILES_PATH}" ]]; then
+    echo " >> Adding users from Kubernetes mounted secret at path '${USERS_AS_FILES_PATH}'"
 
-      echo "$ARG" | chpasswd
-      if [ ! -d /var/spool/mail/$USER ]
-      then
-          mkdir -p /var/spool/mail/$USER
-      fi
-      chown -R $USER:mail /var/spool/mail/$USER
-      chmod -R a=rwx /var/spool/mail/$USER
-      chmod -R o=- /var/spool/mail/$USER
-    fi
-
-    i=`expr $i + 1`
-  done
+    USERS=()
+    for username in $(ls ${USERS_AS_FILES_PATH}); do
+        USERS+=("${username}:$(cat ${USERS_AS_FILES_PATH}/${username})")
+    done
+    createUsers "-" "${USERS[@]}"
 fi
 
 # DKIM
