@@ -17,11 +17,11 @@ jobs:
                   version: v3.8.1
 
             - name: Linting
-              working-directory: helm/sni-router
+              working-directory: helm/smtp-ext-relay
               run: helm lint ./
 
             - name: Template and default values check
-              working-directory: helm/sni-router
+              working-directory: helm/smtp-ext-relay
               run: helm template ./
 
     release-docker:
