@@ -76,7 +76,7 @@ spec:
                         mountPath: "/etc/var/mail"
                         readOnly: false
                       {{- end }}
-                      {{- if .Value.persistence.dkim }}
+                      {{- if .Values.persistence.dkim }}
                       - name: dkim
                         mountPath: /etc/postfix/dkim
                       {{- end }}
@@ -87,9 +87,9 @@ spec:
                   secret:
                       secretName: {{ .Values.tlsSecrets.name }}
                 {{- end }}
-                {{- if .Value.persistence.dkim }}
+                {{- if .Values.persistence.dkim }}
                 - name: dkim
-                  {{- if eq .Value.persistence.dkim.kind "PersistentVolumeClaim" }}
+                  {{- if eq .Values.persistence.dkim.kind "PersistentVolumeClaim" }}
                   persistentVolumeClaim:
                       claimName: {{ .Values.persistence.dkim.name }}
                   {{- else }}
