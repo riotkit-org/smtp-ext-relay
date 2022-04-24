@@ -55,7 +55,7 @@ spec:
                       - name: SMTPD_TLS_KEY_FILE
                         value: /mnt/certs/key
                       - name: SMTPD_USE_TLS
-                        value: yes
+                        value: "yes"
                       {{- end }}
                       - name: MYHOSTNAME
                         value: {{ .Values.hostName }}

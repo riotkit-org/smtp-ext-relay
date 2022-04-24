@@ -11,7 +11,7 @@ spec:
         - port: 2225
           targetPort: smtp
           protocol: TCP
-          name: smtp_high
+          name: smtp-high
 
         - port: 25
           targetPort: smtp

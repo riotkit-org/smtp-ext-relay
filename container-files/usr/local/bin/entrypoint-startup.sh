@@ -86,10 +86,6 @@ then
     createUsers "${@}"
 fi
 
-USERS_AS_FILES_PATH=/mnt/users
-mkdir -p /mnt/users
-echo "test123" > /mnt/users/admin
-
 if [[ "${USERS_AS_FILES_PATH}" != "" ]] && [[ -d "${USERS_AS_FILES_PATH}" ]]; then
     echo " >> Adding users from Kubernetes mounted secret at path '${USERS_AS_FILES_PATH}'"
 

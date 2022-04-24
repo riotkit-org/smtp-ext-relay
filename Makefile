@@ -12,4 +12,10 @@ test:
 	TO="wesoly.krzysztofa@gmail.com"; \
 	MESSAGE="From: wesoly.krzysztofa@gmail.com\n\nHey There! This is a test mail"; \
 	\
-	echo $$MESSAGE | ssmtp -vvv $$TO
+	echo $$MESSAGE
+	 | ssmtp -vvv $$TO
+
+.PHONY: helm-test-install
+helm-test-install:
+	cd helm/smtp-ext-relay && \
+	helm upgrade --install relay . -n smtp --create-namespace
