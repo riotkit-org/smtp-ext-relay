@@ -96,38 +96,6 @@ if [[ "${USERS_AS_FILES_PATH}" != "" ]] && [[ -d "${USERS_AS_FILES_PATH}" ]]; th
     createUsers "-" "${USERS[@]}"
 fi
 
-# DKIM
-if [[ "${ENABLE_DKIM}" == "true" ]]
-then
-  echo ">> Enabling DKIM support"
-  echo "   Canonicalization $DKIM_CANONICALIZATION" >> /etc/opendkim.conf
-
-  postconf -e milter_default_action="accept"
-  postconf -e milter_protocol="2"
-  postconf -e smtpd_milters="inet:localhost:8891"
-  postconf -e non_smtpd_milters="inet:localhost:8891"
-
-  # Generate a key if there is no one
-  if [ ! -f /etc/postfix/dkim/dkim.key ]
-  then
-    echo ">> No dkim.key found - generate one..."
-    opendkim-genkey -s $DKIM_SELECTOR -d $1
-    mkdir -p /etc/postfix/dkim/
-    mv "/$DKIM_SELECTOR.private" /etc/postfix/dkim/dkim.key
-    echo " >> Printing out public dkim key:"
-    cat $DKIM_SELECTOR.txt
-    mv $DKIM_SELECTOR.txt /etc/postfix/dkim/dkim.public
-    echo " >> [!!!] Please add this key to your DNS System, you should also make sure that path /etc/postfix/dkim/ is in a persistent volume"
-  fi
-  echo " >> Change user and group of /etc/postfix/dkim/dkim.key to opendkim"
-  chown -R opendkim:opendkim /etc/postfix/dkim/
-  chmod -R o-rwX /etc/postfix/dkim/
-  chmod o=- /etc/postfix/dkim/dkim.key
-
-  echo " >> DKIM permissions:"
-  ls -la /etc/postfix/dkim
-fi
-
 # Configure /etc/opendkim/custom.conf file
 cat <<EOF > /etc/opendkim/custom.conf
 KeyFile                 /etc/postfix/dkim/dkim.key
@@ -169,6 +137,38 @@ fi
 # preparing directories
 mkdir -p /var/run/saslauthd /run/opendkim
 chown root:root /etc/postfix -R
+
+# DKIM
+if [[ "${ENABLE_DKIM}" == "true" ]]
+then
+  echo ">> Enabling DKIM support"
+  echo "   Canonicalization $DKIM_CANONICALIZATION" >> /etc/opendkim.conf
+
+  postconf -e milter_default_action="accept"
+  postconf -e milter_protocol="2"
+  postconf -e smtpd_milters="inet:localhost:8891"
+  postconf -e non_smtpd_milters="inet:localhost:8891"
+
+  # Generate a key if there is no one
+  if [ ! -f /etc/postfix/dkim/dkim.key ]
+  then
+    echo ">> No dkim.key found - generate one..."
+    opendkim-genkey -s $DKIM_SELECTOR -d $1
+    mkdir -p /etc/postfix/dkim/
+    mv "/$DKIM_SELECTOR.private" /etc/postfix/dkim/dkim.key
+    echo " >> Printing out public dkim key:"
+    cat $DKIM_SELECTOR.txt
+    mv $DKIM_SELECTOR.txt /etc/postfix/dkim/dkim.public
+    echo " >> [!!!] Please add this key to your DNS System, you should also make sure that path /etc/postfix/dkim/ is in a persistent volume"
+  fi
+  echo " >> Change user and group of /etc/postfix/dkim/dkim.key to opendkim"
+  chown -R opendkim:opendkim /etc/postfix/dkim/
+  chmod -R o-rwX /etc/postfix/dkim/
+  chmod o=- /etc/postfix/dkim/dkim.key
+
+  echo " >> DKIM permissions:"
+  ls -la /etc/postfix/dkim
+fi
 
 # disable choot, not required in docker container
 postconf -F smtp/inet/chroot=n
