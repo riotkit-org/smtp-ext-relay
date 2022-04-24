@@ -80,7 +80,13 @@ spec:
                       {{- end }}
                       {{- if .Values.persistence.dkim }}
                       - name: dkim
+                        {{- if eq .Values.persistence.dkim.kind "PersistentVolumeClaim" }}
                         mountPath: /etc/postfix/dkim
+                        readOnly: false
+                        {{- else }}
+                        mountPath: /mnt/dkim-secret-volume
+                        readOnly: true
+                        {{- end }}
                       {{- end }}
                       - name: users
                         mountPath: /mnt/users
