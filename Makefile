@@ -9,8 +9,8 @@ run:
 .PHONY: test
 test:
 	SUBJECT="Test Subject"; \
-	TO="wesoly.krzysztofa@gmail.com"; \
-	MESSAGE="From: wesoly.krzysztofa@gmail.com\n\nHey There! This is a test mail"; \
+	TO="example@example.org"; \
+	MESSAGE="From: example@example.org\n\nHey There! This is a test mail"; \
 	\
 	echo $$MESSAGE
 	 | ssmtp -vvv $$TO
@@ -18,4 +18,4 @@ test:
 .PHONY: helm-test-install
 helm-test-install:
 	cd helm/smtp-ext-relay && \
-	helm upgrade --install relay . -n smtp --create-namespace
+	helm upgrade --install relay . -n smtp --create-namespace --values example-values/secrets.yaml

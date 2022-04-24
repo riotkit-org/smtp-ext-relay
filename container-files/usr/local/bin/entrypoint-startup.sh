@@ -141,7 +141,7 @@ chown root:root /etc/postfix -R
 # DKIM
 if [[ "${ENABLE_DKIM}" == "true" ]]
 then
-  if [[ -f /mnt/dkim-secret-volume ]]; then
+  if [[ -f /mnt/dkim-secret-volume/dkim.key ]]; then
       echo " >> Synchronizing secrets from /mnt/dkim-secret-volume to /etc/postfix/dkim"
       cp -pr /mnt/dkim-secret-volume/* /etc/postfix/dkim/
   fi
