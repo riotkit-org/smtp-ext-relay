@@ -96,9 +96,6 @@ if [[ "${USERS_AS_FILES_PATH}" != "" ]] && [[ -d "${USERS_AS_FILES_PATH}" ]]; th
     createUsers "-" "${USERS[@]}"
 fi
 
-# fix: `opendkim: /etc/opendkim.conf: root is in group 0 which has multiple users (e.g., "sync")`
-gpasswd -d sync root || true
-
 # DKIM
 if [[ "${ENABLE_DKIM}" == "true" ]]
 then
