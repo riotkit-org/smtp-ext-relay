@@ -123,6 +123,9 @@ then
   chown -R opendkim:opendkim /etc/postfix/dkim/
   chmod -R o-rwX /etc/postfix/dkim/
   chmod o=- /etc/postfix/dkim/dkim.key
+
+  echo " >> DKIM permissions:"
+  ls -la /etc/postfix/dkim
 fi
 
 # Configure /etc/opendkim/custom.conf file
