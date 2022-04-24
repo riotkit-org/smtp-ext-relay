@@ -181,5 +181,7 @@ fi
 touch /var/log/mail.log /var/log/mail.err /var/log/mail.warn
 chmod a+rw /var/log/mail.*
 
+echo " >> Running as $(id)}"
+
 set -x
 exec multirun "${PROCESSES[@]/#/}"
