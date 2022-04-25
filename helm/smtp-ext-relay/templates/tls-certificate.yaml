@@ -1,0 +1,16 @@
+{{- if .Values.certManager.use }}
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: {{ .Values.tlsSecrets.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+    commonName: {{ .Values.certManager.commonName }}
+    secretName: {{ include "smtp-ext-relay.fullname" . }}-tls-cert
+    dnsNames:
+        - {{ .Values.certManager.commonName }}
+    issuerRef:
+        name: {{ .Values.certManager.issuerName }}
+        kind: {{ .Values.certManager.issuerKind }}
+{{- end }}

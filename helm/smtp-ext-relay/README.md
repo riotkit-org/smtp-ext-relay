@@ -9,6 +9,7 @@ Simple SMTP server working on Kubernetes.
 - TLS authentication
 - Spam Assassin
 - Supports [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets)
+- Supports [cert-manager](https://cert-manager.io/)
 
 Version v2.x was refactored to not depend on Python and Supervisord - instead lightweight Golang-based alternatives were used.
 

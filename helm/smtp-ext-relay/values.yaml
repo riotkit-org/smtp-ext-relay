@@ -13,14 +13,17 @@ image:
     repository: ghcr.io/riotkit-org/smtp
     # tag:
 
-useTLS: true
-hostName: example.org
-
 usersSecret:
     kind: Secret # Secret or SealedSecret
     users: {}
         # user: password syntax, if SealedSecret then password must be already encrypted
 
+
+# =============
+#  TLS support
+# =============
+useTLS: true
+hostName: example.org
 tlsSecrets:
     create: true
     name: smtp-tls
@@ -32,6 +35,16 @@ tlsSecrets:
     ca: |
         ...
 
+# alternatively to manually managed certificated you can use cert-manager
+certManager:
+    use: false
+    commonName: example.org
+    issuerName: letsencrypt-prod
+    issuerKind: ClusterIssuer
+
+# ==================
+#  Data Persistence
+# ==================
 persistence:
     mail:
         enabled: false

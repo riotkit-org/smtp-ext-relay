@@ -50,11 +50,11 @@ spec:
                   env:
                       {{- if .Values.useTLS }}
                       - name: SMTP_TLS_CA_FILE
-                        value: /mnt/certs/ca
+                        value: /mnt/certs/ca.crt
                       - name: SMTPD_TLS_CERT_FILE
-                        value: /mnt/certs/cert
+                        value: /mnt/certs/tls.crt
                       - name: SMTPD_TLS_KEY_FILE
-                        value: /mnt/certs/key
+                        value: /mnt/certs/tls.key
                       - name: SMTPD_USE_TLS
                         value: "yes"
                       {{- end }}
