@@ -19,7 +19,7 @@ Version v2.x was refactored to not depend on Python and Supervisord - instead li
 Setting up
 ----------
 
-Use helm to install `smtp-ext-relay`. For helm values please take a look at [values reference](https://github.com/riotkit-org/smtp-ext-relay/blob/main/helm/smtp-ext-relay/values.yaml).
+Use helm to install `smtp-ext-relay`. For helm values please take a look at [values reference](https://github.com/riotkit-org/smtp-ext-relay/blob/master/helm/smtp-ext-relay/values.yaml).
 
 ```bash
 helm repo add riotkit-org https://riotkit-org.github.io/helm-of-revolution/
