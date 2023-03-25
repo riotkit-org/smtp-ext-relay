@@ -1,8 +1,8 @@
-FROM alpine:3.12
-MAINTAINER RiotKit <riotkit_org@riseup.net>
+FROM alpine:3.17
+MAINTAINER RiotKit
 
 RUN apk add --update bash sudo postfix opendkim cyrus-sasl rsyslog \
-                        cyrus-sasl-plain cyrus-sasl-crammd5 cyrus-sasl-login cyrus-sasl-digestmd5 cyrus-sasl-gs2 cyrus-sasl-scram \
+                        cyrus-sasl-crammd5 cyrus-sasl-login cyrus-sasl-digestmd5 cyrus-sasl-gs2 cyrus-sasl-scram \
                         cyrus-sasl-ntlm cyrus-sasl-gssapiv2 spamassassin-client \
                         opendkim opendkim-utils \
     && adduser -D -u 1090 spamcuser \
