@@ -21,5 +21,5 @@ jobs:
             always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
         with:
             chartPath: helm/smtp-ext-relay
-            chartName: smtp
+            chartName: smtpd
             enableHelmDocs: true
