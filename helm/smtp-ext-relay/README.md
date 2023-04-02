@@ -13,25 +13,24 @@ Simple SMTP server with support for forwarding e-mails using different relays de
 | certManager.issuerKind | string | `"ClusterIssuer"` |  |
 | certManager.issuerName | string | `"letsencrypt-prod"` |  |
 | certManager.use | bool | `false` |  |
-| env | list | `[]` |  |
-| envs.APPEND_DOT_MYDOMAIN | string | `"no"` |  |
-| envs.BIFF | string | `"no"` |  |
-| envs.DELAY_WARNING_TIME | string | `"4h"` |  |
-| envs.DKIM_CANONICALIZATION | string | `"simple"` |  |
-| envs.DKIM_SELECTOR | string | `"mail"` |  |
-| envs.ENABLE_DKIM | string | `"true"` |  |
-| envs.HEADER_SIZE_LIMIT | string | `"4096000"` |  |
-| envs.MAILBOX_SIZE_LIMIT | string | `"0"` |  |
-| envs.RECIPIENT_DELIMITER | string | `"+"` |  |
-| envs.RELAY_HOST | string | `""` |  |
-| envs.SASL_AUTH_ENABLE | string | `"yes"` |  |
-| envs.SMTPD_BANNER | string | `"RiotKit SMTPD"` |  |
-| envs.SMTPD_HELO_RESTRICTIONS | string | `"permit_sasl_authenticated, permit_mynetworks, reject_invalid_hostname, reject_unauth_pipelining, reject_non_fqdn_hostname"` |  |
-| envs.SMTPD_RECIPIENT_RESTRICTIONS | string | `"permit_mynetworks permit_sasl_authenticated reject_unauth_destination"` |  |
-| envs.SMTP_SASL_AUTH_ENABLE | string | `"yes"` |  |
-| envs.SMTP_SASL_SECURITY_OPTIONS | string | `"noanonymous"` |  |
-| envs.SMTP_USE_TLS | string | `"yes"` |  |
-| envs.TLS_SECURITY_LEVEL | string | `"may"` |  |
+| env.APPEND_DOT_MYDOMAIN | string | `"no"` |  |
+| env.BIFF | string | `"no"` |  |
+| env.DELAY_WARNING_TIME | string | `"4h"` |  |
+| env.DKIM_CANONICALIZATION | string | `"simple"` |  |
+| env.DKIM_SELECTOR | string | `"mail"` |  |
+| env.ENABLE_DKIM | string | `"true"` |  |
+| env.HEADER_SIZE_LIMIT | string | `"4096000"` |  |
+| env.MAILBOX_SIZE_LIMIT | string | `"0"` |  |
+| env.RECIPIENT_DELIMITER | string | `"+"` |  |
+| env.RELAY_HOST | string | `""` |  |
+| env.SASL_AUTH_ENABLE | string | `"yes"` |  |
+| env.SMTPD_BANNER | string | `"RiotKit SMTPD"` |  |
+| env.SMTPD_HELO_RESTRICTIONS | string | `"permit_sasl_authenticated, permit_mynetworks, reject_invalid_hostname, reject_unauth_pipelining, reject_non_fqdn_hostname"` |  |
+| env.SMTPD_RECIPIENT_RESTRICTIONS | string | `"permit_mynetworks permit_sasl_authenticated reject_unauth_destination"` |  |
+| env.SMTP_SASL_AUTH_ENABLE | string | `"yes"` |  |
+| env.SMTP_SASL_SECURITY_OPTIONS | string | `"noanonymous"` |  |
+| env.SMTP_USE_TLS | string | `"yes"` |  |
+| env.TLS_SECURITY_LEVEL | string | `"may"` |  |
 | hostName | string | `"example.org"` |  |
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"ghcr.io/riotkit-org/smtp"` |  |
