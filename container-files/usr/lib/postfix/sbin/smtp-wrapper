@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+if [[ -f /var/run/proxychains ]]; then
+    exec proxychains /usr/lib/postfix/sbin/smtp "$@"
+fi
+exec /usr/lib/postfix/sbin/smtp "$@"

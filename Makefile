@@ -4,7 +4,7 @@ build:
 
 .PHONY: run
 run:
-	docker run --rm -p 2225:2225 -e MYHOSTNAME=riotkit.org -e USER_INTERNAL_NAME=internal -e REWRITE_FROM_ADDRESS=noreply@riotkit.org -e USER_INTERNAL_SECRET=test123  --name smtp smtp-ext-relay:latest riotkit.org
+	docker run --rm -p 2225:2225 -e MYHOSTNAME=riotkit.org -e USER_INTERNAL_NAME=internal -e SOCKS_PROXY_HOST=10.10.10.10 -e SOCKS_PROXY_PORT=1080 -e REWRITE_FROM_ADDRESS=noreply@riotkit.org -e USER_INTERNAL_SECRET=test123  --name smtp smtp-ext-relay:latest riotkit.org
 
 .PHONY: test
 test:

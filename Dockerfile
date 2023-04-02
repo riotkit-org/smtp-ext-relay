@@ -2,7 +2,7 @@ FROM debian:bookworm-slim
 MAINTAINER RiotKit
 
 RUN apt-get update && apt-get install -y bash sudo wget postfix postfix-lmdb opendkim sasl2-bin rsyslog libsasl2-modules libsasl2-modules-db libsasl2-modules-ldap \
-        opendkim python3 python3-pip python3-venv
+        opendkim python3 python3-pip python3-venv proxychains4 procps
 
 # p2 (jinja2)
 RUN wget https://github.com/wrouesnel/p2cli/releases/download/r13/p2-linux-x86_64 -O /usr/bin/p2 && chmod +x /usr/bin/p2
@@ -69,12 +69,15 @@ ENV BIFF=no \
     # /etc/aliases entries @todo: Better examples there
     ALIASES= \
     MY_NETWORKS= \
-    REWRITE_FROM_ADDRESS=
+    REWRITE_FROM_ADDRESS= \
+    SOCKS_PROXY_HOST= \
+    SOCKS_PROXY_PORT=
 
 RUN mkdir -p /etc/opendkim
 ADD ./container-files/usr/local/bin/* /usr/local/bin/
+ADD ./container-files/usr/lib/postfix/sbin/* /usr/lib/postfix/sbin/
 ADD ./container-files/templates /templates
-RUN chmod +x /usr/local/bin/*
+RUN chmod +x /usr/local/bin/* /usr/lib/postfix/sbin/*
 
 # Prepare permissions, create structures
 RUN mkdir -p /var/run/saslauthd /run/opendkim \

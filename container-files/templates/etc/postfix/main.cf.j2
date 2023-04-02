@@ -56,3 +56,6 @@ smtp_use_tls = {{ SMTP_USE_TLS }}
 sender_canonical_classes = envelope_sender, header_sender
 sender_canonical_maps = regexp:/etc/postfix/sender_canonical_maps
 smtp_header_checks = regexp:/etc/postfix/header_check
+
+# Proxy support
+export_environment = TZ PATH {% if SOCKS_PROXY_HOST and SOCKS_PROXY_PORT %}LD_PRELOAD{% endif %}

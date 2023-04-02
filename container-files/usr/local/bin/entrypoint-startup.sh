@@ -88,7 +88,7 @@ entrypoint-setup-transport.sh
 echo " >> Starting processes"
 PROCESSES=(
     "saslauthd -a sasldb -c -m /var/run/saslauthd -n 5 -d"
-    "postfix start-fg"
+    "bash /usr/local/bin/entrypoint-postfix.sh"
     "tail -F /var/log/mail.*"
     "rsyslogd -n"
     "entrypoint-setup-users.sh"
@@ -99,6 +99,10 @@ if [[ "${ENABLE_DKIM}" == "true" ]] || [[ "${ENABLE_DKIM}" == "yes" ]]; then
 fi
 
 echo " >> Running as $(id)}"
+
+if [[ "${SOCKS_PROXY_HOST}" != "" ]] && [[ "${SOCKS_PROXY_PORT}" != "" ]]; then
+    touch /var/run/proxychains
+fi
 
 # todo
 chmod 777 /etc/sasldb2
