@@ -2,5 +2,5 @@ apiVersion: v2
 name: smtp
 description: "Simple SMTP server with support for forwarding e-mails using different relays depending on recipient domain"
 type: application
-version: 0.1.0
-appVersion: "master"  # replaced by CI on build stage
+version: 0.0.1-latest-master
+appVersion: "master" # replaced by CI on build stage
