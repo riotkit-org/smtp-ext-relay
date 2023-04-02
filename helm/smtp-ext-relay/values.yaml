@@ -42,8 +42,6 @@ tlsSecrets:
         name: "smtp-tls-ca"
 
 
-env: []
-
 # alternatively to manually managed certificated you can use cert-manager
 certManager:
     use: false
@@ -86,7 +84,7 @@ persistence:
         #     volumeName: smtp-mails-pv
 
 
-envs:
+env:
     BIFF: "no"
     SMTPD_BANNER: "RiotKit SMTPD"
     APPEND_DOT_MYDOMAIN: "no"
