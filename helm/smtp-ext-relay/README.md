@@ -1,4 +1,4 @@
-# smtp
+# smtpd
 
 ![Version: 0.0.1-latest-master](https://img.shields.io/badge/Version-0.0.1--latest--master-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: master](https://img.shields.io/badge/AppVersion-master-informational?style=flat-square)
 
