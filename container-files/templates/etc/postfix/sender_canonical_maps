@@ -1,0 +1,3 @@
+{% if REWRITE_FROM_ADDRESS %}
+/.+/    {{ REWRITE_FROM_ADDRESS }}
+{% endif %}

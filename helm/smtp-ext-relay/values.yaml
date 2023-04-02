@@ -18,12 +18,13 @@ usersSecret:
     users: {}
         # user: password syntax, if SealedSecret then password must be already encrypted
 
+hostName: example.org
+rewriteFromAddress: ""  # e.g. noreply@example.org
 
 # =============
 #  TLS support
 # =============
 useTLS: true
-hostName: example.org
 tlsSecrets:
     create: true
     name: smtp-tls
@@ -34,6 +35,14 @@ tlsSecrets:
         ...
     ca: |
         ...
+
+    # in case, when e.g. using cert-manager, and it does not automatically create the ca.crt file, so you need to create that file and put into the secret manually
+    separateCASecret:
+        enabled: false
+        name: "smtp-tls-ca"
+
+
+env: []
 
 # alternatively to manually managed certificated you can use cert-manager
 certManager:

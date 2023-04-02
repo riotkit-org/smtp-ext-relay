@@ -98,7 +98,6 @@ main () {
         enforce_line_in_file "/etc/postfix/transport" "${relay_public_domain} smtp:[${relay_smtp_domain}]:${relay_port}" "${relay_public_domain}"
     done
 
-    sudo chown postfix:postfix /etc/postfix/ -R
     sudo chmod 400 /etc/postfix/sasl_passwd
     sudo postmap /etc/postfix/sasl_passwd
     sudo postmap /etc/postfix/transport

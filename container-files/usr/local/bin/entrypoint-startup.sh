@@ -6,95 +6,13 @@ set -e
 # Original file from https://github.com/MarvAmBass/docker-versatile-postfix released under MIT license
 #
 
-function print_help {
-cat <<EOF
-        Generic Postfix Setup Script
-===============================================
-
-to create a new postfix server for your domain
-you should use the following commands:
-
-  docker run -p 25:25 -v /maildirs:/var/mail \
-         dockerimage/postfix \
-         yourdomain.com \
-         user1:password \
-         user2:password \
-         userN:password
-
-this creates a new smtp server which listens
-on port 25, stores mail under /mailsdirs
-and has serveral user accounts like
-user1 with password "password" and a mail
-address user1@yourdomain.com
-________________________________________________
-by MarvAmBass
-EOF
-}
-
-createUser() {
-    if id "$USER" &>/dev/null; then
-        echo " >> User '${USER}' already exists"
-        return 0
-    fi
-
-    echo " >> Adding user: $USER"
-    # shellcheck disable=SC2210
-    adduser -s /bin/bash $USER -D || true
-
-    echo "$ARG" | chpasswd
-    if [ ! -d /var/spool/mail/$USER ]
-    then
-        mkdir -p /var/spool/mail/$USER
-    fi
-    chown -R $USER:mail /var/spool/mail/$USER
-    chmod -R a=rwx /var/spool/mail/$USER
-    chmod -R o=- /var/spool/mail/$USER
-}
-
-createUsers() {
-    # all arguments but skip first
-    i=0
-    for ARG in "$@"
-    do
-        if [ $i -gt 0 ] && [ "$ARG" != "${ARG/://}" ]
-        then
-            USER=`echo "$ARG" | cut -d":" -f1`
-            createUser $USER $ARG
-        fi
-
-        i=`expr $i + 1`
-    done
-}
-
-if [ "-h" == "$1" ] || [ "--help" == "$1" ] || [ -z $1 ] || [ "" == "$1" ]
-then
-    print_help
-    exit 0
-fi
-
-echo ">> Setting up postfix for: $1"
+echo ">> Setting up postfix for: ${MYHOSTNAME}"
 
 # add domain
-postconf -e myhostname="$1"
-postconf -e mydestination="$1"
-echo "$1" > /etc/mailname
-echo "Domain $1" >> /etc/opendkim.conf
-
-if [ ${#@} -gt 1 ]
-then
-    echo " >> Adding users from commandline..."
-    createUsers "${@}"
-fi
-
-if [[ "${USERS_AS_FILES_PATH}" != "" ]] && [[ -d "${USERS_AS_FILES_PATH}" ]]; then
-    echo " >> Adding users from Kubernetes mounted secret at path '${USERS_AS_FILES_PATH}'"
-
-    USERS=()
-    for username in $(ls ${USERS_AS_FILES_PATH}); do
-        USERS+=("${username}:$(cat ${USERS_AS_FILES_PATH}/${username})")
-    done
-    createUsers "-" "${USERS[@]}"
-fi
+postconf -e myhostname="${MYHOSTNAME}"
+postconf -e mydestination="${MYHOSTNAME}"
+echo "${MYHOSTNAME}" > /etc/mailname
+echo "Domain ${MYHOSTNAME}" >> /etc/opendkim.conf
 
 # Configure /etc/opendkim/custom.conf file
 cat <<EOF > /etc/opendkim/custom.conf
@@ -103,40 +21,23 @@ Selector                $DKIM_SELECTOR
 SOCKET                  inet:8891@localhost
 EOF
 
-# add aliases
-> /etc/aliases
-if [[ "${ALIASES}" != "" ]]
-then
-  IFS=';' read -ra ADDR <<< "$ALIASES"
-  for i in "${ADDR[@]}"; do
-    echo "$i" >> /etc/aliases
-    echo ">> Adding $i to /etc/aliases"
-  done
-
-echo ">> The new /etc/aliases file:"
-cat /etc/aliases
-newaliases
-
-fi
-
 ##
 # POSTFIX RAW Config ENVs
 ##
-if env | grep '^POSTFIX_RAW_CONFIG_'
+if env | grep '^PRC_'
 then
-  echo -e "\n## POSTFIX_RAW_CONFIG ##\n" >> /etc/postfix/main.cf
-  env | grep '^POSTFIX_RAW_CONFIG_' | while read I_CONF
+  echo -e "\n## POSTFIX_RAW_CONFIG (PRC) ##\n" >> /etc/postfix/main.cf
+  env | grep '^PRC_' | while read I_CONF
   do
-    CONFD_CONF_NAME=$(echo "$I_CONF" | cut -d'=' -f1 | sed 's/POSTFIX_RAW_CONFIG_//g' | tr '[:upper:]' '[:lower:]')
+    CONFD_CONF_NAME=$(echo "$I_CONF" | cut -d'=' -f1 | sed 's/PRC_//g' | tr '[:upper:]' '[:lower:]')
     CONFD_CONF_VALUE=$(echo "$I_CONF" | sed 's/^[^=]*=//g')
 
     echo "${CONFD_CONF_NAME} = ${CONFD_CONF_VALUE}" >> /etc/postfix/main.cf
   done
 fi
 
-# preparing directories
-mkdir -p /var/run/saslauthd /run/opendkim
-chown root:root /etc/postfix -R
+# add aliases
+#aliases-setup.sh
 
 # DKIM
 if [[ "${ENABLE_DKIM}" == "true" ]]
@@ -175,21 +76,31 @@ then
   ls -la /etc/postfix/dkim
 fi
 
-# disable choot, not required in docker container
+# disable chroot, not required in docker container
 postconf -F smtp/inet/chroot=n
+
+# ---------
+# Transport
+# ---------
+entrypoint-setup-transport.sh
 
 # starting services
 echo " >> Starting processes"
-PROCESSES=("saslauthd -a shadow -c -m /var/run/saslauthd -n 5 -d" "postfix start-fg" "tail -F /var/log/mail.*" "rsyslogd -n")
+PROCESSES=(
+    "saslauthd -a sasldb -c -m /var/run/saslauthd -n 5 -d"
+    "postfix start-fg"
+    "tail -F /var/log/mail.*"
+    "rsyslogd -n"
+    "entrypoint-setup-users.sh"
+)
 
 if [[ "${ENABLE_DKIM}" == "true" ]] || [[ "${ENABLE_DKIM}" == "yes" ]]; then
     PROCESSES+=("opendkim -x /etc/opendkim.conf -A -f")
 fi
 
-touch /var/log/mail.log /var/log/mail.err /var/log/mail.warn
-chmod a+rw /var/log/mail.*
-
 echo " >> Running as $(id)}"
 
-set -x
+# todo
+chmod 777 /etc/sasldb2
+
 exec multirun "${PROCESSES[@]/#/}"

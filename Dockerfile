@@ -1,18 +1,14 @@
-FROM alpine:3.17
+FROM debian:bookworm-slim
 MAINTAINER RiotKit
 
-RUN apk add --update bash sudo postfix opendkim cyrus-sasl rsyslog \
-                        cyrus-sasl-crammd5 cyrus-sasl-login cyrus-sasl-digestmd5 cyrus-sasl-gs2 cyrus-sasl-scram \
-                        cyrus-sasl-ntlm cyrus-sasl-gssapiv2 spamassassin-client \
-                        opendkim opendkim-utils \
-    && adduser -D -u 1090 spamcuser \
-    && addgroup sasl
+RUN apt-get update && apt-get install -y bash sudo wget postfix postfix-lmdb opendkim sasl2-bin rsyslog libsasl2-modules libsasl2-modules-db libsasl2-modules-ldap \
+        opendkim python3 python3-pip python3-venv
 
 # p2 (jinja2)
 RUN wget https://github.com/wrouesnel/p2cli/releases/download/r13/p2-linux-x86_64 -O /usr/bin/p2 && chmod +x /usr/bin/p2
 
 # multirun (supervisord equivalent)
-RUN wget https://github.com/nicolas-van/multirun/releases/download/1.1.3/multirun-x86_64-linux-musl-1.1.3.tar.gz -O /tmp/multirun.tar.gz \
+RUN wget https://github.com/nicolas-van/multirun/releases/download/1.1.3/multirun-x86_64-linux-gnu-1.1.3.tar.gz -O /tmp/multirun.tar.gz \
     && cd /tmp \
     && tar xvf multirun.tar.gz \
     && rm multirun.tar.gz \
@@ -71,13 +67,28 @@ ENV BIFF=no \
     # To support multiple concurrent public keys per sending domain, the DNS namespace is further subdivided with "selectors". Selectors are arbitrary names below the "_domainkey." namespace. For example, selectors may indicate the names of your server locations (e.g., "mta1", "mta2", and "mta2"), the signing date (e.g., "january2005", "february2005", etc.), or even the individual user.
     DKIM_SELECTOR=mail \
     # /etc/aliases entries @todo: Better examples there
-    ALIASES=
+    ALIASES= \
+    MY_NETWORKS= \
+    REWRITE_FROM_ADDRESS=
 
-ADD ./container-files/usr/local/bin/relay-setup-entrypoint.sh /usr/local/bin/relay-setup-entrypoint.sh
-ADD ./container-files/usr/local/bin/entrypoint-startup.sh /usr/local/bin/entrypoint-startup.sh
-ADD ./container-files/usr/local/bin/healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN mkdir -p /etc/opendkim
+ADD ./container-files/usr/local/bin/* /usr/local/bin/
 ADD ./container-files/templates /templates
-RUN chmod +x /usr/local/bin/relay-setup-entrypoint.sh /usr/local/bin/entrypoint-startup.sh
+RUN chmod +x /usr/local/bin/*
+
+# Prepare permissions, create structures
+RUN mkdir -p /var/run/saslauthd /run/opendkim \
+    && touch /var/log/mail.log /var/log/mail.err /var/log/mail.warn \
+    && chmod a+rw /var/log/mail.* \
+    && chown root:root /etc/postfix -R
+RUN gpasswd -a postfix sasl
+
+# Install setup & entrypoint modules
+ADD requirements.txt /tmp/
+RUN mkdir -p /var/lib/venv && python3 -m venv /var/lib/venv \
+    && /bin/bash -c 'source /var/lib/venv/bin/activate; pip install -r /tmp/requirements.txt && rm /tmp/requirements.txt'
+ADD ./setupusers /opt/riotkit/setupusers
+ENV PYTHONPATH=/opt/riotkit
 
 HEALTHCHECK --interval=2m --timeout=3s \
   CMD /usr/local/bin/healthcheck.sh

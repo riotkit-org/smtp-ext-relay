@@ -59,7 +59,11 @@ spec:
                         value: "yes"
                       {{- end }}
                       - name: MYHOSTNAME
-                        value: {{ .Values.hostName }}
+                        value: {{ .Values.hostName | quote }}
+                      {{ if .Values.rewriteFromAddress }}
+                      - name: REWRITE_FROM_ADDRESS
+                        value: {{ .Values.rewriteFromAddress | quote }}
+                      {{ end }}
                       {{- with .Values.env }}
                       {{- range $key, $value := . }}
                       - name: {{ $key }}
@@ -72,6 +76,12 @@ spec:
                       - name: tls
                         mountPath: "/mnt/certs"
                         readOnly: true
+                      {{- end }}
+                      {{- if .Values.tlsSecrets.separateCASecret.enabled }}
+                      - name: ca
+                        mountPath: "/mnt/certs/ca.crt"
+                        readOnly: true
+                        subPath: "ca.crt"
                       {{- end }}
                       {{- if .Values.persistence.mail.enabled }}
                       - name: mail-persistence
@@ -96,6 +106,11 @@ spec:
                 - name: tls
                   secret:
                       secretName: {{ .Values.tlsSecrets.name }}
+                {{- end }}
+                {{- if .Values.tlsSecrets.separateCASecret.enabled }}
+                - name: ca
+                  secret:
+                      secretName: {{ .Values.tlsSecrets.separateCASecret.name }}
                 {{- end }}
                 {{- if .Values.persistence.dkim }}
                 - name: dkim

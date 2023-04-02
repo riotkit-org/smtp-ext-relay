@@ -4,16 +4,15 @@ build:
 
 .PHONY: run
 run:
-	docker run --rm -p 2225:2225 -e MYHOSTNAME=anarchista.net  --name smtp smtp-ext-relay:latest anarchista.net internal:test123
+	docker run --rm -p 2225:2225 -e MYHOSTNAME=riotkit.org -e USER_INTERNAL_NAME=internal -e REWRITE_FROM_ADDRESS=noreply@riotkit.org -e USER_INTERNAL_SECRET=test123  --name smtp smtp-ext-relay:latest riotkit.org
 
 .PHONY: test
 test:
 	SUBJECT="Test Subject"; \
-	TO="example@example.org"; \
+	TO="riotkit@riseup.net"; \
 	MESSAGE="From: example@example.org\n\nHey There! This is a test mail"; \
 	\
-	echo $$MESSAGE
-	 | ssmtp -vvv $$TO
+	echo $$MESSAGE | ssmtp -C ./ssmtp-test.conf -vvv $$TO
 
 .PHONY: helm-test-install
 helm-test-install:

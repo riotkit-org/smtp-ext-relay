@@ -25,3 +25,14 @@ Use helm to install `smtp-ext-relay`. For helm values please take a look at [val
 helm repo add riotkit-org https://riotkit-org.github.io/helm-of-revolution/
 helm install smtp riotkit-org/smtp-ext-relay
 ```
+
+### TLS support
+
+**Existing secret with `tls.crt`, `tls.key`, `ca.crt` keys.
+
+```yaml
+
+tlsSecrets:
+    create: false
+    name: my-existing-secret
+```
